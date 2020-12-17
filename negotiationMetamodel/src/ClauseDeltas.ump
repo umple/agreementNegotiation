@@ -1,0 +1,63 @@
+// File ClauseDeltas.ump describes the possible changes that can be made to
+// Clauses
+
+// A delta group is a set of deltas that can be linked by 'and' or 'excusive or' and can include other groups
+
+class DeltaGroup {
+
+  // Most groups are linked by 'and' meaning a conjunct
+  //   a conjunct means that all are being proposed
+  // But some groups could be alternatives with exclusive or 'either this or that, but not both'.
+  // Others could be 'disjuncts'. 'Any of these ... it doesn't have to be all'
+  // A final approval has to be a conjunct
+  enum booleanLink {conjunct, alternative, disjunct};
+  * -- * Delta;
+  * -- * DeltaGroup subgroups;
+}
+
+
+// Deltas can be of three kinds, but each can apply to a set of clauses
+// Deltas are designed to be atomic units of change
+
+
+class Delta {
+  autounique  deltaSerialNumber;
+  0..1 -- * Rationale;  // Markdown
+  0..1 -- * Feedback;  // Markdown
+}
+
+class AdditionDelta {
+  isA Delta;
+  0..1 -- 1..* Clause newClauses;
+}
+
+class DeletionDelta {
+  isA Delta;
+  0..1 -- 1..* Clause clausesToDelete;
+}
+
+class ModificationDelta {
+  isA Delta;
+  0..1 -- 1..* ClauseModification;
+}
+
+// Modifications can be of 3 kinds ... each applying to just one clause
+
+class ClauseModification {
+  0..1 -- 1 Clause clauseToModify;
+}
+
+class ClauseTextDiff {
+  isA ClauseModification;
+  textChange; // Markdown diff
+}
+
+class ClauseRenumbering {
+  isA ClauseModification;
+  newNumber;
+}
+
+class ClauseReparenting {
+  isA ClauseModification;
+  0..1 -- 1 Clause newParentClause;
+}//$?[End_of_model]$?

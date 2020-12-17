@@ -1,0 +1,134 @@
+class Party {
+  1--1..* User;
+}
+
+class NegotiationSession {
+}
+
+class Party {
+  name;
+  address;
+}
+
+class User {
+  userid;
+  name;
+  emailAddress;
+}
+
+class Agreement {
+  title;
+  * -- 2..* Party;
+  1 -- * AgreementVersion;
+}
+
+class Clause {
+  id;
+  lazy title;
+  text; // Markdown format
+  0..1 higherLevelClause -- * Clause subclauses;
+}
+
+class AgreementVersion {
+  Date agreementDate;
+  Time agreementTime;
+  changeDescription;
+  0..1 -- * Clause;
+  * -- * Proposal acceptedProposals; // The proposals accepted prior to creation of this
+}
+
+class VisibilityControlledItem {
+  0..1 -- 0..1 User author;
+  *  -- 1..* Party partiesAllowedToSee;
+}
+
+class Proposal {
+  isA VisibilityControlledItem;
+  autounique  proposalSerialNumber;
+  1..* -- * Delta;
+  0..1 -- 1 AgreementVersion; // version these should be applied to
+  0..1 -- * Rationale;
+  0..1 -- * Feedback;
+}
+
+use ClauseDeltas.ump;
+
+class ExplanatoryText {
+  isA VisibilityControlledItem;
+  0..1 -- 0..1 User author;
+  markdownText;
+}
+
+class Rationale {
+  isA ExplanatoryText;
+}
+
+class Feedback {
+  isA ExplanatoryText;
+}
+
+
+
+namespace -;
+
+
+class Party
+{
+  position 50 30 109 45;
+}
+
+class NegotiationSession
+{
+  position 50 130 109 45;
+}
+
+class User
+{
+  position 50 230 109 45;
+}
+
+class Agreement
+{
+  position 50 330 109 45;
+  position.association Agreement__Party 30,0 30,75;
+  position.association Agreement__AgreementVersion 110,7 0,10;
+}
+
+class Clause
+{
+  position 50 430 109 45;
+}
+
+class AgreementVersion
+{
+  position 250 30 109 45;
+  position.association AgreementVersion__Proposal:acceptedProposals 9,90 30,0;
+}
+
+class VisibilityControlledItem
+{
+  position 250 130 109 45;
+  position.association Party:partiesAllowedToSee__VisibilityControlledItem 0,10 118,11;
+}
+
+class Proposal
+{
+  position 250 230 109 45;
+  position.association AgreementVersion__Proposal 60,0 60,92;
+}
+
+class ExplanatoryText
+{
+  position 250 330 109 45;
+  position.association ExplanatoryText__User:author 0,10 154,54;
+}
+
+class Rationale
+{
+  position 250 430 109 45;
+}
+
+class Feedback
+{
+  position 450 30 109 45;
+}
