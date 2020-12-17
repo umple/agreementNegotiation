@@ -1,0 +1,141 @@
+
+
+class AgreementProcessorMain {
+  public static void main(String[] args) 
+  {
+//DEBUG DELETED    console = "";
+     
+    if (args.length < 2)
+    {
+      System.out.println("Usage: java -jar agreementprocessor.jar <data_dir> <output_dir>" + System.lineSeparator()+"\n");
+      return;
+    }
+     
+    String dataDirectory = args[0];
+    String outputDirectory = args[1];
+    AgreementProcessor agg = new AgreementProcessor 
+      (dataDirectory,outputDirectory);
+    boolean didGenerate = agg.generate();
+    
+    if (didGenerate)
+    {
+      System.out.println("Success generating processing agreement!");
+    }
+    for (String message : agg.getMessages())
+    {
+      System.out.println(message);
+    }
+    System.exit(agg.isSeriousProblem() ? -1 : 0);
+  }
+
+}
+
+class AgreementProcessor {
+  depend java.nio.file.Files;
+  depend java.nio.file.Path;
+
+  public boolean generate() {
+    File inputDirectory = new File(getInputPath());
+    if (!inputDirectory.exists())
+    {
+      addMessage("Unknown directory: " + getInputPath());
+      setSeriousProblem(true);
+      return false;
+    }
+
+// DEBUG took out argument "agreement" below
+    setParser(new AgreementParser());
+
+    parseAgreement(inputDirectory);
+
+    if (getParser().analyze().getWasSuccess())
+    {
+      System.out.println("Output agreement details \n"+getParser()+"\n"); 
+      return true;
+    }
+    else
+    {
+      addMessage("Error: Unable to analyze agrement files in " + getInputPath());
+      setSeriousProblem(true);
+      return false;
+    }
+  }
+
+  private void parseAgreement(File inputDirectory)
+  {
+   String[] pathnames = inputDirectory.list();
+  
+    for (String aPathName : pathnames)
+    {
+      // DEBUG
+      System.out.println("Processing: "+aPathName+"\n");
+      if (aPathName.endsWith(".txt"))
+      {
+        String fileContentToParse = readFile(aPathName);
+        if (!getParser().parse(
+          "agreementx", fileContentToParse+" @@Filename "+aPathName).getWasSuccess())
+        {
+          String theMessage="Error: Unable to parse agreement at line "+ getParser().getParseResult().getPosition() +": " + aPathName ;
+          addMessage(theMessage);
+          // DEBUG
+          System.out.println(theMessage+"/n");
+          setSeriousProblem(true);
+        }
+      }
+    }
+        
+  }
+  
+  isA LineReader;
+}
+
+trait LineReader {
+  String readFile(String aPath) {
+    try {
+      Path fileName = Path.of(aPath);
+      return Files.readString(fileName);
+    }
+    catch (IOException e) {
+      return("Failed to read file "+aPath);
+    }
+  }
+
+
+}
+
+
+class AgreementParser {
+  depend java.nio.file.Paths;
+  depend java.nio.file.Path;
+  depend java.nio.file.Files;
+  depend java.io.IOException;
+  
+  internal Integer init = init();
+  
+
+  private int init()
+  {
+    // DEBUG
+    System.out.println("Reading in grammar\n");
+  
+    addGrammarFile("Agreement.grammar");
+    
+    init += 1;
+    return init;
+  }
+
+  public ParseResult analyze()
+  {
+    // DEBUG
+    System.out.println("About to analyse\n");
+
+    for (Token t : getRootToken().getSubTokens())
+    {
+       System.out.println("Found Token: "+t+"\n");
+    }
+    return getParseResult();
+
+  }  
+}
+
+use Agreement.ump;

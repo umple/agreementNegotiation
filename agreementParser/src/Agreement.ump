@@ -1,0 +1,41 @@
+
+// The class that runs the process of parsing agreements
+class AgreementProcessor {
+  depend java.io.*;
+  depend java.net.*;
+
+  inputPath;
+  outputPath;
+  String[] messages;
+  
+  Boolean seriousProblem = false;
+
+  0..1 -> 0..1 AgreementParser parser;
+}
+
+external RuleBasedParser{}
+/* 
+ * Specialist parser for the parsing agreements
+ */
+class AgreementParser
+{
+  depend cruise.umple.parser.analysis.RuleBasedParser;
+  depend cruise.umple.parser.Token;
+  depend cruise.umple.parser.ParseResult;
+
+  isA RuleBasedParser;
+}
+
+// This is the main metamodel of the entities we are going 
+// to construct when we parse agreements
+class Agreement {
+  1 -- * Clause;
+}
+
+class Clause {
+  lazy identifier;
+  lazy heading;
+  lazy bodyText;
+  0..1 -- * Clause subclauses;
+}
+

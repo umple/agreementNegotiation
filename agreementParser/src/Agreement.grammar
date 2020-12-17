@@ -1,0 +1,9 @@
+agreement : [[clause]]* @@Filename [*filename];
+clause : [[identifier]]+ [[heading]]+ [[bodyText]]+
+identifier : [[articleIdentifier]] | [[sectionIdentifier]] | [[thirdLevelIdentifier]]
+articleIdentifier : Article [[numberedClauseID]]
+sectionIdentifier : Section [[numberedClauseID]]
+thirdLevelIdentifier : [[numberedClauseID]]
+heading : [**headingText]
+bodyText : [**headingLine]
+numberedClauseID : [!number:[0-9]+([\\.][0-9]+)?([\\.][0-9]+)?]

@@ -1,0 +1,9 @@
+Article 1 This is the beginning of the trivial case
+Article wording
+More article wording
+
+Section 1.1 A little bit about this
+Section description
+
+1.1.1 Some initial suff
+Here is the initial stuff

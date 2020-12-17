@@ -1,0 +1,1 @@
+This directory contains sample text files that can be parsed by the agreement Parser. 
