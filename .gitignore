@@ -1,3 +1,8 @@
+#custom
+# generated Umple code that is not saved
+src-gen-umple/
+lib/
+
 # Compiled class file
 *.class
 
