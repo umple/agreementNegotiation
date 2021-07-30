@@ -1,4 +1,5 @@
 // The class that runs the process of parsing agreements
+generate Java "../src-gen-umple";
 class AgreementProcessor {
   depend java.io.*;
   depend java.net.*;

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="AgreementNegotiation" default="Init">
+	<target name="Init">
+		 <mkdir dir="../lib/jars"/>
+      		 <copy file="../../umple/umple/dist/umpleparser-1.31.0.5692.1a9e80997.jar"   tofile="../lib/jars/umpleparser.jar" overwrite="true" />
+      		 <copy file="../../umple/umple/dist/umplerun-1.31.0.5692.1a9e80997.jar"   tofile="../lib/jars/umplerun.jar" overwrite="true" /> 
+	</target>
+   
+   <target name="compile">
+   	<java jar="../lib/jars/umplerun.jar" fork="true" failonerror="true" >
+        <arg value="../agreementParser/src/Agreement.ump"/>
+    </java>
+   </target>
+</project>
