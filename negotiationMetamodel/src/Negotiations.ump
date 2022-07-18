@@ -8,6 +8,7 @@ class NegotiationSession {
 class Party {
   name;
   address;
+  displayColor yellow;
 }
 
 class User {
@@ -20,6 +21,7 @@ class Agreement {
   title;
   * -- 2..* Party;
   1 -- * AgreementVersion;
+  displayColor orange;
 }
 
 class Clause {
@@ -27,6 +29,7 @@ class Clause {
   lazy title;
   text; // Markdown format
   0..1 higherLevelClause -- * Clause subclauses;
+  displayColor lightcoral;
 }
 
 class AgreementVersion {
@@ -35,38 +38,164 @@ class AgreementVersion {
   changeDescription;
   0..1 -- * Clause;
   * -- * Proposal acceptedProposals; // The proposals accepted prior to creation of this
+  displayColor lightsalmon;
 }
 
 class VisibilityControlledItem {
   0..1 -- 0..1 User author;
   *  -- 1..* Party partiesAllowedToSee;
+  displayColor darkgoldenrod;
 }
+
+// A proposal is made by a party
 
 class Proposal {
   isA VisibilityControlledItem;
   autounique  proposalSerialNumber;
-  1..* -- * Delta;
+  1..* -- * DeltaGroup;
   0..1 -- 1 AgreementVersion; // version these should be applied to
   0..1 -- * Rationale;
   0..1 -- * Feedback;
+  displayColor moccasin;
 }
 
-use ClauseDeltas.ump;
+// A Note is information attached
 
-class ExplanatoryText {
+class Note {
   isA VisibilityControlledItem;
   0..1 -- 0..1 User author;
   markdownText;
+  displayColor goldenrod;
 }
 
+
+// Rationale is informationtal text
+// about a delta or and entire
+// proposal, explaining why the
+// proposer wants the change
 class Rationale {
-  isA ExplanatoryText;
+  isA Note;
+  displayColor goldenrod;
 }
 
 class Feedback {
-  isA ExplanatoryText;
+  isA Note;
+  displayColor goldenrod;
 }
 
+
+// The following describes the possible 
+// changes that can be made to
+// Clauses
+
+// Deltas can be of three kinds, but 
+// each can apply to a set of clauses
+// Deltas are designed to be atomic 
+// units of change
+
+class Delta {
+  autounique  deltaSerialNumber;
+  0..1 -- * Rationale;  // Markdown
+  0..1 -- * Feedback;  // Markdown
+  displayColor lightskyblue;
+}
+
+// An AdditionDelta is simply a new
+// set of clauses that are to be added
+class AdditionDelta {
+  isA Delta;
+  0..1 -- 1..* Clause newClauses;
+  displayColor lightskyblue;
+}
+
+// A DeletionDelta is a set of clauses
+// that are to be deleted
+class DeletionDelta {
+  isA Delta;
+  0..1 -- 1..* Clause clausesToDelete;
+  displayColor lightskyblue;
+}
+
+// A ModificationDelta contains
+// A list of modifications to specific 
+// clauses
+// These in turn could be textual
+// changes or renumberings
+class ModificationDelta {
+  isA Delta;
+  0..1 -- 1..* ClauseModification;
+  displayColor lightskyblue;
+}
+
+
+// A delta group is a set of deltas
+// that can be linked by 'and' or
+// 'excusive or' and can include other 
+// groups
+//
+// Most groups are linked by 'and' 
+// meaning a conjunct
+//   a conjunct means that all 
+//   deltas and subgroups are 
+//   being proposed
+// 
+// But some groups could be
+// alternatives with exclusive or
+// 'either this or that,
+// but not both'.
+//
+// Others could be 'disjuncts'.
+// 'Any of these ... it does
+// not have to be all'
+//
+// A final approved proposal has to 
+// be a conjunct, or just a single
+// Delta
+class DeltaGroup {
+  // This enum describes the kind of
+  // DeltaGroup
+  enum booleanLink {conjunct, alternative, disjunct};
+    
+  0..1 -- * Delta;
+  0..1 -- * DeltaGroup subgroups;
+  displayColor cornflowerblue;
+}
+
+// Modifications can be of 3 kinds ... each applying to just one clause
+
+class ClauseModification {
+  0..1 -- 1 Clause clauseToModify;
+  displayColor lightGreen;
+}
+
+class ClauseTextDiff {
+  isA ClauseModification;
+  textChange; // Markdown diff
+  displayColor lightGreen;
+}
+
+
+// When applied to a clause this 
+// indicates that the clause should
+// have a new number following the
+// modification
+class ClauseRenumbering {
+  isA ClauseModification;
+  newNumber;
+  displayColor lightGreen;
+}
+
+// When applied to a clause, a
+// ClauseReparenting indicates that
+// the clause should be moved from
+// being a subclause of its original
+// parent clause, to being a subclause
+// or the newParentClause
+class ClauseReparenting {
+  isA ClauseModification;
+  0..1 -- 1 Clause newParentClause;
+  displayColor lightGreen;
+}
 
 
 namespace -;
@@ -131,4 +260,4 @@ class Rationale
 class Feedback
 {
   position 450 30 109 45;
-}
+}//$?[End_of_model]$?
