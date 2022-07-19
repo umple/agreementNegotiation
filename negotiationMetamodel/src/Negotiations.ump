@@ -13,7 +13,10 @@
 // collective agreement, or anything 
 // else
 class Agreement {
-  title;
+  // Note that the title of the
+  // agreement is determined by
+  // the AgreementVersion, since it
+  // can change
   
   // Each agreement is
   // between 2 or more parties
@@ -33,15 +36,12 @@ class Agreement {
 // and the Users who are involved
 // in negotiation for one of the 
 // parties
-//
-//
 class LegalEntity {
   name;
   address;
   emailAddress;
 
   displayColor yellow;
-
 }
 
 // All negotiations involve at least
@@ -62,121 +62,21 @@ class Party {
 class User {
   isA LegalEntity;
   
-  enum role {ChiefNegotiator, MemberAtTable, Other}
+  enum role {
+    ChiefNegotiator,
+    MemberAtTable,
+    Other
+  }
   
   userid;
   
   displayColor yellow;
 }
 
-class NegotiationSession {
-}
-
-
-// Clauses are the core elements of
-// an agreement
-// Each time a clause is changed
-// a new ClauseVersion is created.
-// The history of a clause can
-// be explored by reviewing its
-// versions
-class Clause {
-  // The internalID is used
-  // to tie togetner all the versions
-  // of a clause so their history
-  // can be tracked
-  autounique internalID;
-  1 -- * ClauseVersion;
-  
-  displayColor lightcoral;
-}
-
-// An AgreementVersion is made up
-// of ClauseVersions, and the
-// difference between agreement
-// versions is determined by the
-// differences in the ClauseVersions
-//
-// A new ClauseVersion is created
-// every time the id, title, text or
-// members change
-class ClauseVersion { 
-  // The ID of a clause will normally
-  // be a number or a letter, or
-  // for subclauses, a string of these
-  // often separated by dots.
-  // It will be displayed to the user
-  // it can be changed such as when
-  // re-ordering, insertion of new
-  // clauses or reparenting take place
-  // A the top level, the version mignt
-  // include a string such as 'Article'
-  id;
-  
-  // A clause may or may not have a
-  // title to help identify it
-  lazy title;
-  
-  // The text is the essential legal
-  // text of the clause
-  text; // Markdown format
-  
-  // A clause may or may not have lower
-  // level clauses
-  0..1 higherLevelClause -- 0..1 SubclauseSetVersion subclauses;
-  
-  displayColor lightsalmon;
-}
-
-// A subclauseSetVersion records the
-// particular subclauses that are
-// nested within a particular version
-// of a higher level clause
-class SubclauseSetVersion {
-  
-  * -> * ClauseVersion members;
-
-  displayColor lightsalmon;
-}
-
-
-// An AgreementVersion contains
-// a set of top level ClauseVersions
-//
-// It should be considered like an
-// edited version of the agreement
-// document, and theregfore may be
-// informal, private to one party,
-// presented at the negotiation table,
-// or in some state of approval
-//
-// Any change to any clause results
-// in a new AgreementVersion even
-// if it is a temporary edit
-class AgreementVersion {
-  isA VisibilityControlledItem;
-  
-  Date versionDate;
-  Time versionTime;
-  
-  // The changeDescription is
-  // optional, but could be used to
-  // identify information such as
-  // that it was presented to a party
-  // or is subject to ratification etc.
-  changeDescription;
-  
-  0..1 <@>- * ClauseVersion;
-  
-  * -- * Proposal acceptedProposals; // The proposals accepted prior to creation of this
-  
-  displayColor lightsalmon;
-}
-
 // A VisibilityControlledItem is
 // something that only certain
-// entities are allowed to see
-// These include AgreementVersions
+// LegalEntitles are allowed to see
+// These include ItemVersions
 // that may be incomplete or being
 // prepared by one party
 class VisibilityControlledItem {
@@ -192,22 +92,152 @@ class VisibilityControlledItem {
   // maybe all parties, or maybe just
   // the chief negotiator and an
   // assistant
-  *  -- 1..* LegalEntity entitiesllowedToSee;
+  *  -- 1..* LegalEntity
+    allowedToSee;
   
   displayColor darkgoldenrod;
 }
 
-// A proposal is made by a party
-
-class Proposal {
+// An Item Version contains
+// a set of ClauseVersions
+// (subclauses)
+//
+// Its two subclasses represent
+// either an edited version of the
+// agreement as a whole, or else
+// of one of the clauses.
+//
+// It may be informal, private to
+// one party,
+// presented at the negotiation table,
+// or in some state of approval
+//
+// Any change to any contained
+// clause results
+// in a new ItemVersion even
+// if it is a temporary edit
+class ItemVersion {
   isA VisibilityControlledItem;
   
-  autounique  proposalSerialNumber;
-  1..* -- * DeltaGroup;
-  0..1 -- 1 AgreementVersion; // version these should be applied to
+  Date versionDate;
+  Time versionTime;
+  
+  // Each version is a result of
+  // changes to a previous version
+  * -- 0..1 ItemVersion basedOn;
 
-  displayColor moccasin;
+  // An AgreementVersion should have a
+  // title but a ClauseVersion may
+  // or may not have a
+  // title to help identify it
+  lazy title;
+  
+  // The changeDescription is
+  // optional, but could be used to
+  // identify information such as
+  // that it was presented to a party
+  // or is subject to ratification etc.
+  changeDescription;
+  
+  0..1 -> * ClauseVersion containedClauses;
+  
+  //* -- * Proposal acceptedProposals; // The proposals accepted prior to creation of this
+  
+  displayColor lightsalmon;
 }
+
+// This is a special case of
+// ItemVersion for the top level
+// agreements
+class AgreementVersion {
+  isA ItemVersion;
+  
+  // An agreement may have a descriptive
+  // Version label that is made
+  // public
+  versionLabel;
+  
+  displayColor lightsalmon;
+
+}
+
+// An ItemVersion is made up
+// of ClauseVersions, and the
+// difference between ItemVersions
+// versions is determined by the
+// differences in the ClauseVersions
+//
+// A new ClauseVersion is created
+// every time the id, title, text or
+// subclauses are edited
+//
+// A ClauseVersion is only part of an
+// agreement version if it is a
+// subclause of another ClauseVersion
+// and/or is a top level clause of an
+// AgreementVersion
+//
+// Moving a ClauseVersion from one
+// parent to another means changing
+// both parents
+class ClauseVersion {
+  isA ItemVersion;
+
+  // The ID of a clause will normally
+  // be a number or a letter, or
+  // for subclauses, a string of these
+  // often separated by dots.
+  // It will be displayed to the user
+  // it can be changed such as when
+  // re-ordering, insertion of new
+  // clauses or reparenting take place
+  // A the top level, the version mignt
+  // include a string such as 'Article'
+  //
+  // The title would appear after the id
+  id;
+  
+  // The text is the essential legal
+  // text of the clause
+  // It ises Markdown format
+  // To allow for italics etc.
+  text; // Markdown format
+  
+  // A clause may or may not have lower
+  // level clauses called subclauses.
+  // Note that if we want to find the
+  // parent we have to navigate down
+  // from the top level 
+  // AgreementVersion because otherwise
+  // every change to a clause would
+  // require creating new versions of
+  // its subclauses
+  0..1 parentClause -> * ClauseVersion subclauses;
+  
+  displayColor lightsalmon;
+}
+
+// Clauses are the core elements of
+// an agreement
+//
+// Each time a clause is changed
+// a new ClauseVersion is created.
+// The history of a clause can
+// be explored by reviewing its
+// versions
+class Clause {
+  // The internalID is used
+  // to tie togetner all the versions
+  // of a clause so their history
+  // can be tracked even if the clause
+  // is radically changed over time
+  autounique internalID;
+  1 -- * ClauseVersion;
+  
+  displayColor lightcoral;
+}
+
+
 
 // A Note is information attached
 // to a version or proposal
@@ -251,45 +281,27 @@ class Note {
 }
 
 
-// The following describes the possible 
-// changes that can be made to
-// Clauses
-
-// Deltas can be of three kinds, but 
-// each can apply to a set of clauses
-// Deltas are designed to be atomic 
-// units of change
-
-class Delta {
-  autounique  deltaSerialNumber;
-
-  displayColor lightskyblue;
-}
-
-// A ModificationDelta contains
-// A list of modifications to specific 
-// clauses
-// These in turn could be textual
-// changes or renumberings
-class ModificationDelta {
-  isA Delta;
-  0..1 -- 1..* ClauseModification;
-  displayColor lightskyblue;
-}
-
-
-// A delta group is a set of deltas
-// that can be linked by 'and' or
-// 'excusive or' and can include other 
-// groups
-//
-// Most groups are linked by 'and' 
-// meaning a conjunct
-//   a conjunct means that all 
-//   deltas and subgroups are 
-//   being proposed
+// A Proposal is a set of ItemVersions
+// that can be linked by 'and', 'or' or
+// 'excusive or'
 // 
-// But some groups could be
+// It represents ideas for changes to
+// an agreement
+//
+// The simplest case could be a change
+// to just one clause
+//
+// But many Proposals have multiple
+// elements, which might be linked
+// as follows
+//
+// Most sets of elements are linked
+// by 'and' meaning a conjunct
+//   a conjunct means that all 
+//   changes are requested to be made
+//   together
+// 
+// But some elements could be
 // alternatives with exclusive or
 // 'either this or that,
 // but not both'.
@@ -299,51 +311,82 @@ class ModificationDelta {
 // not have to be all'
 //
 // A final approved proposal has to 
-// be a conjunct, or just a single
-// Delta
-class DeltaGroup {
+// be a conjunct, or just hava a single
+// element
+class Proposal {
+  isA ItemVersion;
+  
   // This enum describes the kind of
-  // DeltaGroup
-  enum booleanLink {conjunct, alternative, disjunct};
+  // Proposal
+  enum booleanLink {
+    conjunct,
+    alternative,
+    disjunct
+  };
     
-  0..1 -- * Delta;
-  0..1 -- * DeltaGroup subgroups;
+  // The elements can be
+  // ClauseVersions or
+  // Proposals (i.e. sub-proposals)
+  0..1 -> * ItemVersion elements;
+  
   displayColor cornflowerblue;
 }
-
-// Modifications can be of 3 kinds ... each applying to just one clause
-
-class ClauseModification {
-  0..1 -- 1 Clause clauseToModify;
-  displayColor lightGreen;
-}
-
-class ClauseTextDiff {
-  isA ClauseModification;
-  textChange; // Markdown diff
-  displayColor lightGreen;
-}
-
-
-// When applied to a clause this 
-// indicates that the clause should
-// have a new number following the
-// modification
-class ClauseRenumbering {
-  isA ClauseModification;
-  newNumber;
-  displayColor lightGreen;
-}
-
-// When applied to a clause, a
-// ClauseReparenting indicates that
-// the clause should be moved from
-// being a subclause of its original
-// parent clause, to being a subclause
-// or the newParentClause
-class ClauseReparenting {
-  isA ClauseModification;
-  0..1 -- 1 Clause newParentClause;
-  displayColor lightGreen;
-}
 //$?[End_of_model]$?
+
+namespace -;
+
+
+class Agreement
+{
+  position 50 30 109 45;
+}
+
+class LegalEntity
+{
+  position 50 130 109 45;
+}
+
+class Party
+{
+  position 50 230 109 45;
+}
+
+class User
+{
+  position 50 330 109 45;
+}
+
+class ClauseVersion
+{
+  position 250 130 109 45;
+}
+
+class AgreementVersion
+{
+  position 250 230 109 45;
+}
+
+class VisibilityControlledItem
+{
+  position 250 330 109 45;
+}
+
+class Note
+{
+  position 450 30 109 45;
+}
+
+class ItemVersion
+{
+  position 250 230 109 45;
+}
+
+class Proposal
+{
+  position 450 30 109 45;
+}
+
+class Clause
+{
+  position 250 330 109 45;
+}
