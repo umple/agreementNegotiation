@@ -62,11 +62,12 @@ class Party {
 class User {
   isA LegalEntity;
   
-  enum role {
+  enum Role {
     ChiefNegotiator,
     MemberAtTable,
     Other
   }
+  Role role;
   
   userid;
   
@@ -146,21 +147,6 @@ class ItemVersion {
   displayColor lightsalmon;
 }
 
-// This is a special case of
-// ItemVersion for the top level
-// agreements
-class AgreementVersion {
-  isA ItemVersion;
-  
-  // An agreement may have a descriptive
-  // Version label that is made
-  // public
-  versionLabel;
-  
-  displayColor lightsalmon;
-
-}
-
 // An ItemVersion is made up
 // of ClauseVersions, and the
 // difference between ItemVersions
@@ -217,6 +203,21 @@ class ClauseVersion {
   displayColor lightsalmon;
 }
 
+// This is a special case of
+// ItemVersion for the top level
+// agreements
+class AgreementVersion {
+  isA ItemVersion;
+  
+  // An agreement may have a
+  // descriptive Version label that is
+  // made public
+  versionLabel;
+  
+  displayColor lightsalmon;
+
+}
+
 // Clauses are the core elements of
 // an agreement
 //
@@ -260,7 +261,8 @@ class Note {
   // a note can even be about another
   // note, such as a private
   // observation about some rationale
-  * -- 1 VisibilityControlledItem subject;
+  * -- 1 VisibilityControlledItem
+    subject;
   
   // Arbitrary text associated with
   // the item
@@ -275,7 +277,13 @@ class Note {
   // in some way, it can be tagged
   // as FeedbackFromOtherParty to
   // allow for better searches
-  enum noteType {Unknown, Rationale, FeedbackFromOtherParty, Other}
+  enum NoteType {
+    Unknown,
+    Rationale,
+    FeedbackFromOtherParty,
+    Other
+  }
+  NoteType noteType;
   
   displayColor goldenrod;
 }
@@ -318,11 +326,12 @@ class Proposal {
   
   // This enum describes the kind of
   // Proposal
-  enum booleanLink {
+  enum BooleanLink {
     conjunct,
     alternative,
     disjunct
   };
+  BooleanLink booleanLink;
     
   // The elements can be
   // ClauseVersions or
@@ -361,14 +370,10 @@ class ClauseVersion
   position 250 130 109 45;
 }
 
-class AgreementVersion
-{
-  position 250 230 109 45;
-}
-
 class VisibilityControlledItem
 {
   position 250 330 109 45;
+  position.association LegalEntity:allowedToSee__VisibilityControlledItem 0,10 149,91;
 }
 
 class Note
@@ -389,4 +394,9 @@ class Proposal
 class Clause
 {
   position 250 330 109 45;
+}
+
+class AgreementVersion
+{
+  position 250 230 109 45;
 }
