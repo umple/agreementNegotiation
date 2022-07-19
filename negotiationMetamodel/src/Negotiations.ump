@@ -1,49 +1,173 @@
+// This model is a metamodel for
+// negotiation. It can be used for
+// the development of negotiation tools
+// or negotiation domain-specific
+// languages
+
+// All negotiations have as their
+// objective the creation or update of
+// an Agreement. This could be
+// an international treaty, a
+// commercial agreement for purchase
+// and sale, a labour-management
+// collective agreement, or anything 
+// else
+class Agreement {
+  title;
+  
+  // Each agreement is
+  // between 2 or more parties
+  // which are defined below
+  * -- 2..* Party;
+  
+  // Agreements are updated over time
+  // so the latest approved version is
+  // actually the most important
+  1 -- * AgreementVersion;
+  
+  displayColor orange;
+}
+
+// The legal entities involved in
+// negotiation are the Parties
+// and the Users who are involved
+// in negotiation for one of the 
+// parties
+//
+//
+class LegalEntity {
+  name;
+  address;
+  emailAddress;
+
+  displayColor yellow;
+
+}
+
+// All negotiations involve at least
+// Two parties. These could be
+// sovereign states, corporations,
+// unions or individuals
 class Party {
+  isA LegalEntity;
   1--1..* User;
+
+  displayColor yellow;
+}
+
+// A party has Users. The reason for
+// tracking these is so that we know
+// who is making proposals, or signing
+// of on parts of the agreement
+class User {
+  isA LegalEntity;
+  
+  enum role {ChiefNegotiator, MemberAtTable, Other}
+  
+  userid;
+  
+  displayColor yellow;
 }
 
 class NegotiationSession {
 }
 
-class Party {
-  name;
-  address;
-  displayColor yellow;
-}
 
-class User {
-  userid;
-  name;
-  emailAddress;
-}
-
-class Agreement {
-  title;
-  * -- 2..* Party;
-  1 -- * AgreementVersion;
-  displayColor orange;
-}
-
+// Clauses are the core elements of
+// an agreement
+// Each time a clause is changed
+// a new ClauseVersion is created.
+// The history of a clause can
+// be explored by reviewing its
+// versions
 class Clause {
-  id;
-  lazy title;
-  text; // Markdown format
-  0..1 higherLevelClause -- * Clause subclauses;
+  // The internalID is used
+  // to tie togetner all the versions
+  // of a clause so their history
+  // can be tracked
+  autounique internalID;
+  1 -- * ClauseVersion;
+  
   displayColor lightcoral;
 }
-
-class AgreementVersion {
-  Date agreementDate;
-  Time agreementTime;
-  changeDescription;
-  0..1 -- * Clause;
-  * -- * Proposal acceptedProposals; // The proposals accepted prior to creation of this
+  
+class ClauseVersion { 
+  // The ID of a clause will normally
+  // be a number or a letter, or
+  // for subclauses, a string of these
+  // often separated by dots.
+  // It will be displayed to the user
+  // it can be changed such as when
+  // re-ordering, insertion of new
+  // clauses or reparenting take place
+  id;
+  
+  // A clause may or may not have a
+  // title to help identify it
+  lazy title;
+  
+  // The text is the essential legal
+  // text of the clause
+  text; // Markdown format
+  
+  // A clause may or may not have lower
+  // level clauses
+  0..1 higherLevelClause -- * Clause subclauses;
+  
   displayColor lightsalmon;
 }
 
+// An AgreementVersion contains
+// a set of ClauseVersions
+//
+// It should be considered like an
+// edited version of the agreement
+// document, and theregfore may be
+// informal, private to one party,
+// presented at the negotiation table,
+// or in some state of approval
+
+class AgreementVersion {
+  isA VisibilityControlledItem;
+  
+  Date versionDate;
+  Time versionTime;
+  
+  // The changeDescription is
+  // optional, but could be used to
+  // identify information such as
+  // that it was presented to a party
+  // or is subject to ratification etc.
+  changeDescription;
+  
+  0..1 <@>- * ClauseVersion;
+  
+  * -- * Proposal acceptedProposals; // The proposals accepted prior to creation of this
+  
+  displayColor lightsalmon;
+}
+
+// A VisibilityControlledItem is
+// something that only certain
+// entities are allowed to see
+// These include AgreementVersions
+// that may be incomplete or being
+// prepared by one party
 class VisibilityControlledItem {
+  
+  // An item nay or may not be tagged
+  // with an author
   0..1 -- 0..1 User author;
-  *  -- 1..* Party partiesAllowedToSee;
+  
+  // It may be that only one person
+  // such as a person creating a draft
+  // can currently see a version, or
+  // maybe everybody in a party, or
+  // maybe all parties, or maybe just
+  // the chief negotiator and an
+  // assistant
+  *  -- 1..* LegalEntity entitiesllowedToSee;
+  
   displayColor darkgoldenrod;
 }
 
@@ -51,6 +175,7 @@ class VisibilityControlledItem {
 
 class Proposal {
   isA VisibilityControlledItem;
+  
   autounique  proposalSerialNumber;
   1..* -- * DeltaGroup;
   0..1 -- 1 AgreementVersion; // version these should be applied to
@@ -196,68 +321,4 @@ class ClauseReparenting {
   0..1 -- 1 Clause newParentClause;
   displayColor lightGreen;
 }
-
-
-namespace -;
-
-
-class Party
-{
-  position 50 30 109 45;
-}
-
-class NegotiationSession
-{
-  position 50 130 109 45;
-}
-
-class User
-{
-  position 50 230 109 45;
-}
-
-class Agreement
-{
-  position 50 330 109 45;
-  position.association Agreement__Party 30,0 30,75;
-  position.association Agreement__AgreementVersion 110,7 0,10;
-}
-
-class Clause
-{
-  position 50 430 109 45;
-}
-
-class AgreementVersion
-{
-  position 250 30 109 45;
-  position.association AgreementVersion__Proposal:acceptedProposals 9,90 30,0;
-}
-
-class VisibilityControlledItem
-{
-  position 250 130 109 45;
-  position.association Party:partiesAllowedToSee__VisibilityControlledItem 0,10 118,11;
-}
-
-class Proposal
-{
-  position 250 230 109 45;
-  position.association AgreementVersion__Proposal 60,0 60,92;
-}
-
-class ExplanatoryText
-{
-  position 250 330 109 45;
-  position.association ExplanatoryText__User:author 0,10 154,54;
-}
-
-class Rationale
-{
-  position 250 430 109 45;
-}
-
-class Feedback
-{
-  position 450 30 109 45;
-}//$?[End_of_model]$?
+//$?[End_of_model]$?
