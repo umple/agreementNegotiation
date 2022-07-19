@@ -90,7 +90,16 @@ class Clause {
   
   displayColor lightcoral;
 }
-  
+
+// An AgreementVersion is made up
+// of ClauseVersions, and the
+// difference between agreement
+// versions is determined by the
+// differences in the ClauseVersions
+//
+// A new ClauseVersion is created
+// every time the id, title, text or
+// members change
 class ClauseVersion { 
   // The ID of a clause will normally
   // be a number or a letter, or
@@ -100,6 +109,8 @@ class ClauseVersion {
   // it can be changed such as when
   // re-ordering, insertion of new
   // clauses or reparenting take place
+  // A the top level, the version mignt
+  // include a string such as 'Article'
   id;
   
   // A clause may or may not have a
@@ -112,13 +123,25 @@ class ClauseVersion {
   
   // A clause may or may not have lower
   // level clauses
-  0..1 higherLevelClause -- * Clause subclauses;
+  0..1 higherLevelClause -- 0..1 SubclauseSetVersion subclauses;
   
   displayColor lightsalmon;
 }
 
+// A subclauseSetVersion records the
+// particular subclauses that are
+// nested within a particular version
+// of a higher level clause
+class SubclauseSetVersion {
+  
+  * -> * ClauseVersion members;
+
+  displayColor lightsalmon;
+}
+
+
 // An AgreementVersion contains
-// a set of ClauseVersions
+// a set of top level ClauseVersions
 //
 // It should be considered like an
 // edited version of the agreement
@@ -126,7 +149,10 @@ class ClauseVersion {
 // informal, private to one party,
 // presented at the negotiation table,
 // or in some state of approval
-
+//
+// Any change to any clause results
+// in a new AgreementVersion even
+// if it is a temporary edit
 class AgreementVersion {
   isA VisibilityControlledItem;
   
@@ -179,32 +205,48 @@ class Proposal {
   autounique  proposalSerialNumber;
   1..* -- * DeltaGroup;
   0..1 -- 1 AgreementVersion; // version these should be applied to
-  0..1 -- * Rationale;
-  0..1 -- * Feedback;
+
   displayColor moccasin;
 }
 
 // A Note is information attached
-
+// to a version or proposal
+// Since it is visibility controlled
+// it can be private to just one
+// user, or to a party, or to
+// everybody. 
+//
+// A note is not a legal part of the
+// agreement, but may help people
+// to record what others thing,
+// or why the change is proposed.
+// Sometimes old notes can be used
+// to help resolve disputes
+// about interpretation
 class Note {
   isA VisibilityControlledItem;
-  0..1 -- 0..1 User author;
+  
+  // A note is about something
+  // a note can even be about another
+  // note, such as a private
+  // observation about some rationale
+  * -- 1 VisibilityControlledItem subject;
+  
+  // Arbitrary text associated with
+  // the item
   markdownText;
-  displayColor goldenrod;
-}
-
-
-// Rationale is informationtal text
-// about a delta or and entire
-// proposal, explaining why the
-// proposer wants the change
-class Rationale {
-  isA Note;
-  displayColor goldenrod;
-}
-
-class Feedback {
-  isA Note;
+  
+  // By default there is no need
+  // to record a note type, so it
+  // would be Unknown. But if the note
+  // provides evidence or justification
+  // it can be tagged as Rationale,
+  // and if the other party has reacted
+  // in some way, it can be tagged
+  // as FeedbackFromOtherParty to
+  // allow for better searches
+  enum noteType {Unknown, Rationale, FeedbackFromOtherParty, Other}
+  
   displayColor goldenrod;
 }
 
@@ -220,24 +262,7 @@ class Feedback {
 
 class Delta {
   autounique  deltaSerialNumber;
-  0..1 -- * Rationale;  // Markdown
-  0..1 -- * Feedback;  // Markdown
-  displayColor lightskyblue;
-}
 
-// An AdditionDelta is simply a new
-// set of clauses that are to be added
-class AdditionDelta {
-  isA Delta;
-  0..1 -- 1..* Clause newClauses;
-  displayColor lightskyblue;
-}
-
-// A DeletionDelta is a set of clauses
-// that are to be deleted
-class DeletionDelta {
-  isA Delta;
-  0..1 -- 1..* Clause clausesToDelete;
   displayColor lightskyblue;
 }
 
