@@ -17,6 +17,7 @@ class Agreement {
   // agreement is determined by
   // the AgreementVersion, since it
   // can change
+  autounique internalID;
   
   // Each agreement is
   // between 2 or more parties
@@ -37,6 +38,7 @@ class Agreement {
 // in negotiation for one of the 
 // parties
 class LegalEntity {
+  abstract;
   name;
   address;
   emailAddress;
@@ -81,6 +83,7 @@ class User {
 // that may be incomplete or being
 // prepared by one party
 class VisibilityControlledItem {
+  abstract;
   
   // An item nay or may not be tagged
   // with an author
@@ -101,7 +104,7 @@ class VisibilityControlledItem {
 
 // An Item Version contains
 // a set of ClauseVersions
-// (subclauses)
+// (containedClauses)
 //
 // Its two subclasses represent
 // either an edited version of the
@@ -118,15 +121,9 @@ class VisibilityControlledItem {
 // in a new ItemVersion even
 // if it is a temporary edit
 class ItemVersion {
-  isA VisibilityControlledItem;
+  isA Version;
+  abstract;
   
-  Date versionDate;
-  Time versionTime;
-  
-  // Each version is a result of
-  // changes to a previous version
-  * -- 0..1 ItemVersion basedOn;
-
   // An AgreementVersion should have a
   // title but a ClauseVersion may
   // or may not have a
@@ -140,7 +137,7 @@ class ItemVersion {
   // or is subject to ratification etc.
   changeDescription;
   
-  0..1 -> * ClauseVersion containedClauses;
+  0..1 container -> * ClauseVersion containedClauses;
   
   //* -- * Proposal acceptedProposals; // The proposals accepted prior to creation of this
   
@@ -150,7 +147,7 @@ class ItemVersion {
 // An ItemVersion is made up
 // of ClauseVersions, and the
 // difference between ItemVersions
-// versions is determined by the
+// is determined by the
 // differences in the ClauseVersions
 //
 // A new ClauseVersion is created
@@ -191,6 +188,9 @@ class ClauseVersion {
   
   // A clause may or may not have lower
   // level clauses called subclauses.
+  // This is maintained in the
+  // containedClauses association
+  // inherited from ItemVersion
   // Note that if we want to find the
   // parent we have to navigate down
   // from the top level 
@@ -198,7 +198,6 @@ class ClauseVersion {
   // every change to a clause would
   // require creating new versions of
   // its subclauses
-  0..1 parentClause -> * ClauseVersion subclauses;
   
   displayColor lightsalmon;
 }
@@ -215,7 +214,6 @@ class AgreementVersion {
   versionLabel;
   
   displayColor lightsalmon;
-
 }
 
 // Clauses are the core elements of
@@ -321,8 +319,9 @@ class Note {
 // A final approved proposal has to 
 // be a conjunct, or just hava a single
 // element
+
 class Proposal {
-  isA ItemVersion;
+  isA Version;
   
   // This enum describes the kind of
   // Proposal
@@ -336,67 +335,94 @@ class Proposal {
   // The elements can be
   // ClauseVersions or
   // Proposals (i.e. sub-proposals)
-  0..1 -> * ItemVersion elements;
+  0..1 -> * Version elements;
   
   displayColor cornflowerblue;
 }
-//$?[End_of_model]$?
+
+class Version { 
+  isA VisibilityControlledItem;
+  abstract;
+  
+  Date versionDate;
+  Time versionTime;
+  
+  // Each version is a result of
+  // changes to a previous version
+  * -- 0..1 Version basedOn;
+
+  displayColor lightsalmon;
+}//$?[End_of_model]$?
 
 namespace -;
 
 
 class Agreement
 {
-  position 50 30 109 45;
+  position 28 367 147.14674377441406 58.043479919433594;
+  position.association Agreement__AgreementVersion 118,58 30,0;
+  position.association Agreement__Party 72,0 74,41;
 }
 
 class LegalEntity
 {
-  position 50 130 109 45;
+  position 171 4 147.75 92.953125;
 }
 
 class Party
 {
-  position 50 230 109 45;
+  position 30 157 109 41.39945602416992;
+  position.association Party__User 109,5 0,24;
 }
 
 class User
 {
-  position 50 330 109 45;
+  position 178 150 113.19293975830078 74.6875;
 }
 
 class ClauseVersion
 {
-  position 250 130 109 45;
+  position 590 520 113.78125 75.953125;
 }
 
 class VisibilityControlledItem
 {
-  position 250 330 109 45;
-  position.association LegalEntity:allowedToSee__VisibilityControlledItem 0,10 149,91;
+  position 388 146 155.078125 57.953125;
+  position.association LegalEntity:allowedToSee__VisibilityControlledItem 123,0 161,59;
+  position.association User:author__VisibilityControlledItem 0,4 113,30;
 }
 
 class Note
 {
-  position 450 30 109 45;
+  position 118 266 169.14402770996094 74.6875;
+  position.association Note__VisibilityControlledItem:subject 169,30 10,41;
 }
 
 class ItemVersion
 {
-  position 250 230 109 45;
-}
-
-class Proposal
-{
-  position 450 30 109 45;
+  position 189 390 180.703125 91.953125;
+  position.association ClauseVersion:containedClauses__ItemVersion:container 194,69 0,43;
 }
 
 class Clause
 {
-  position 250 330 109 45;
+  position 574 251 145.25814819335938 73.6956558227539;
+  position.association Clause__ClauseVersion 93,58 74,0;
 }
 
 class AgreementVersion
 {
-  position 250 230 109 45;
+  position 157 518 142.34375 58.953125;
+}
+
+class Proposal
+{
+  position 465 391 190.74728393554688 58.043479919433594;
+  position.association ItemVersion:elements__Proposal 0,12 194,12;
+  position.association Proposal__Version:elements 150,0 140,76;
+}
+
+class Version
+{
+  position 414 260 145.1494598388672 74.6875;
 }

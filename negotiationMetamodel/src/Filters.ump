@@ -22,6 +22,10 @@ filter 4 {
   include Agreement, AgreementVersion;
 }
 
+filter 5 {
+  include Proposal;
+}
+
 
 
 // Uncomment to show Figure 1
@@ -33,8 +37,11 @@ filter 4 {
 // Uncommet to show Figure 3
 filter {includeFilter 4;}  
 
+// Uncommet to show figure with proposal
+//filter {includeFilter 5;}  
 
+use Negotiations.ump;
 
-use Negotiations.ump;//$?[End_of_model]$?
+// use https://raw.githubusercontent.com/umple/agreementNegotiation/main/negotiationMetamodel/src/Negotiations.ump;//$?[End_of_model]$?
 
 namespace -;
