@@ -17,12 +17,7 @@ class Agreement {
   // agreement is determined by
   // the AgreementVersion, since it
   // can change
-  autounique internalID;
-  
-  // Each agreement is
-  // between 2 or more parties
-  // which are defined below
-  * -- 2..* Party;
+  autounique agreementID;
   
   // Agreements are updated over time
   // so the latest approved version is
@@ -52,17 +47,16 @@ class LegalEntity {
 // unions or individuals
 class Party {
   isA LegalEntity;
-  1--1..* User;
+  1--* UserRole;
 
   displayColor yellow;
 }
 
-// A party has Users. The reason for
+// A party has UserRoles. The reason for
 // tracking these is so that we know
 // who is making proposals, or signing
 // of on parts of the agreement
-class User {
-  isA LegalEntity;
+class UserRole {
   
   enum Role {
     ChiefNegotiator,
@@ -70,11 +64,22 @@ class User {
     Other
   }
   Role role;
-  
+
+  displayColor yellow;
+}
+
+// A user may have multiple roles
+// For example they may be involved in multiple negotiations
+// for different agreements
+class User {
+  isA LegalEntity;
   userid;
+
+  1 -- * UserRole;
   
   displayColor yellow;
 }
+
 
 // A VisibilityControlledItem is
 // something that only certain
@@ -87,7 +92,7 @@ class VisibilityControlledItem {
   
   // An item nay or may not be tagged
   // with an author
-  0..1 -- 0..1 User author;
+  0..1 authoredItem -- 0..1 User author;
   
   // It may be that only one person
   // such as a person creating a draft
@@ -96,7 +101,7 @@ class VisibilityControlledItem {
   // maybe all parties, or maybe just
   // the chief negotiator and an
   // assistant
-  *  -- 1..* LegalEntity
+  *  controlledItem -- 1..* LegalEntity
     allowedToSee;
   
   displayColor darkgoldenrod;
@@ -207,6 +212,11 @@ class ClauseVersion {
 // agreements
 class AgreementVersion {
   isA ItemVersion;
+
+  // Each agreement version is
+  // between 2 or more parties
+  // which are defined below
+  * -- 2..* Party;
   
   // An agreement may have a
   // descriptive Version label that is
@@ -273,12 +283,21 @@ class Note {
   // it can be tagged as Rationale,
   // and if the other party has reacted
   // in some way, it can be tagged
-  // as FeedbackFromOtherParty to
+  // as Feedback-FromOtherParty to
   // allow for better searches
   enum NoteType {
     Unknown,
-    Rationale,
-    FeedbackFromOtherParty,
+    Rationale-Private,
+    Rationale-ToReveal,
+    Rationale-Revealed,
+    Rationale-FromOtherparty,
+    Feedback-FromOtherParty,
+    Analysis-AboutOtherParty-Private,
+    Feedback-ToReveal,
+    Feedback-Revealed,
+    Feedback-FromOtherParty,
+    ProcessObservations,
+    Data,
     Other
   }
   NoteType noteType;
@@ -352,77 +371,4 @@ class Version {
   * -- 0..1 Version basedOn;
 
   displayColor lightsalmon;
-}//$?[End_of_model]$?
-
-namespace -;
-
-
-class Agreement
-{
-  position 28 367 147.14674377441406 58.043479919433594;
-  position.association Agreement__AgreementVersion 118,58 30,0;
-  position.association Agreement__Party 72,0 74,41;
-}
-
-class LegalEntity
-{
-  position 171 4 147.75 92.953125;
-}
-
-class Party
-{
-  position 30 157 109 41.39945602416992;
-  position.association Party__User 109,5 0,24;
-}
-
-class User
-{
-  position 178 150 113.19293975830078 74.6875;
-}
-
-class ClauseVersion
-{
-  position 590 520 113.78125 75.953125;
-}
-
-class VisibilityControlledItem
-{
-  position 388 146 155.078125 57.953125;
-  position.association LegalEntity:allowedToSee__VisibilityControlledItem 123,0 161,59;
-  position.association User:author__VisibilityControlledItem 0,4 113,30;
-}
-
-class Note
-{
-  position 118 266 169.14402770996094 74.6875;
-  position.association Note__VisibilityControlledItem:subject 169,30 10,41;
-}
-
-class ItemVersion
-{
-  position 189 390 180.703125 91.953125;
-  position.association ClauseVersion:containedClauses__ItemVersion:container 194,69 0,43;
-}
-
-class Clause
-{
-  position 574 251 145.25814819335938 73.6956558227539;
-  position.association Clause__ClauseVersion 93,58 74,0;
-}
-
-class AgreementVersion
-{
-  position 157 518 142.34375 58.953125;
-}
-
-class Proposal
-{
-  position 465 391 190.74728393554688 58.043479919433594;
-  position.association ItemVersion:elements__Proposal 0,12 194,12;
-  position.association Proposal__Version:elements 150,0 140,76;
-}
-
-class Version
-{
-  position 414 260 145.1494598388672 74.6875;
 }

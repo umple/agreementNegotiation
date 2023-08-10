@@ -1,47 +1,74 @@
-
-
-filter 0 {
+filter x {
   include Nothing;
 }
 
-filter 1 {
-  include LegalEntity;
-  hops {sub 1;}
+
+// Figure X1. Shows Agreement and neigbours
+// use -s hideAtributes to avoid showing them 
+filter X1 {
+  include Agreement, Party, AgreementVersion;
+  hops {super 0;}
+}
+mixset filterX1 {
+ filter {includeFilter X1;}  
 }
 
-filter 2 {
+// Figure X2. Shows parents of AgreementVersion
+// enables explaining of attributes
+filter X2 {
+  include Agreement, AgreementVersion;
+}
+mixset filterX2 {
+ filter {includeFilter X2;}  
+}
+
+// Figure X3. Simple hierarchy of LegalEntity
+filter X3 {
+  include LegalEntity, UserRole;
+  hops {sub 1;}
+}
+mixset filterX3 {
+ filter {includeFilter X3;}  
+}
+
+// Figure X4. VisibilityControlledItem
+filter X4 {
+  include LegalEntity, User, VisibilityControlledItem;
+}
+mixset filterX4 {
+ filter {includeFilter X4;}  
+}
+
+filter X5 {
   include VisibilityControlledItem;
   hops {sub 1;}
 }
-
-filter 3 {
-  include Clause, ClauseVersion;
+mixset filterX5 {
+ filter {includeFilter X5;}  
 }
 
-filter 4 {
-  include Agreement, AgreementVersion;
+filter X6 {
+  include ItemVersion, Clause, ClauseVersion;
+  hops {super 0;}  
+}
+mixset filter3 {
+ filter {includeFilter X6;}  
 }
 
-filter 5 {
-  include Proposal;
+
+filter X7 {
+  include Proposal, Version;
+  hops {super 0;}    
+  hops {sub 0;}  
 }
-
-
-
-// Uncomment to show Figure 1
-// filter {includeFilter 1,2;}  
-
-// Uncommet to show Figure 2
-// filter {includeFilter 3;}  
-
-// Uncommet to show Figure 3
-filter {includeFilter 4;}  
-
-// Uncommet to show figure with proposal
-//filter {includeFilter 5;}  
+mixset filterX7 {
+ filter {includeFilter X7;}  
+}
 
 use Negotiations.ump;
 
-// use https://raw.githubusercontent.com/umple/agreementNegotiation/main/negotiationMetamodel/src/Negotiations.ump;//$?[End_of_model]$?
+// use https://raw.githubusercontent.com/umple/agreementNegotiation/main/negotiationMetamodel/src/Negotiations.ump;
+
+//$?[End_of_model]$?
 
 namespace -;
