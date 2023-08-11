@@ -12,12 +12,17 @@
 // and sale, a labour-management
 // collective agreement, or anything 
 // else
+//
+// Note that the title of the
+// agreement is determined by
+// the AgreementVersion, since it
+// can change
+
 class Agreement {
-  // Note that the title of the
-  // agreement is determined by
-  // the AgreementVersion, since it
-  // can change
-  autounique agreementID;
+  // An internal ID that can be used by an API
+  // to allow for queries about this
+  // specific agreement, irrespective of version
+  autounique Integer internalAgreementID;
   
   // Agreements are updated over time
   // so the latest approved version is
@@ -89,13 +94,18 @@ class User {
 // A VisibilityControlledItem is
 // something that only certain
 // LegalEntitles are allowed to see
-// These include ItemVersions
-// that may be incomplete or being
-// prepared by one party
+// These include Versions of Proposals
+// or Clauses that may be incomplete or
+// being prepared by one party; or Notes
 class VisibilityControlledItem {
   abstract;
   
-  // An item nay or may not be tagged
+  // Internal ID of the item that can be
+  // referred to by an API that needs to
+  // query specify Versions or Notes.
+  autounique Integer internalItemID;
+  
+  // An item may or may not be tagged
   // with an author
   0..1 authoredItem -- 0..1 User author;
   
@@ -178,13 +188,13 @@ class ClauseVersion {
 
   // The ID of a clause will normally
   // be a number or a letter, or
-  // for subclauses, a string of these
+  // for subclauses, a string of these,
   // often separated by dots.
   // It will be displayed to the user
   // it can be changed such as when
   // re-ordering, insertion of new
   // clauses or reparenting take place
-  // A the top level, the version mignt
+  // A the top level, the version might
   // include a string such as 'Article'
   //
   // The title would appear after the id
@@ -240,12 +250,14 @@ class AgreementVersion {
 // be explored by reviewing its
 // versions
 class Clause {
-  // The internalID is used
+  // The internalClauseID is used
   // to tie togetner all the versions
   // of a clause so their history
   // can be tracked even if the clause
   // is radically changed over time
-  autounique internalID;
+  // This can be used by an API to refer
+  // to a clause irrespective of version
+  autounique Integer internalClauseID;
   1 -- * ClauseVersion;
   
   displayColor lightcoral;
