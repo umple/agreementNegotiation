@@ -22,7 +22,7 @@ class Agreement {
   // An internal ID that can be used by an API
   // to allow for queries about this
   // specific agreement, irrespective of version
-  autounique Integer internalAgreementID;
+  autounique internalAgreementID;
   
   // Agreements are updated over time
   // so the latest approved version is
@@ -103,7 +103,7 @@ class VisibilityControlledItem {
   // Internal ID of the item that can be
   // referred to by an API that needs to
   // query specify Versions or Notes.
-  autounique Integer internalItemID;
+  autounique internalItemID;
   
   // An item may or may not be tagged
   // with an author
@@ -257,13 +257,11 @@ class Clause {
   // is radically changed over time
   // This can be used by an API to refer
   // to a clause irrespective of version
-  autounique Integer internalClauseID;
+  autounique internalClauseID;
   1 -- * ClauseVersion;
   
   displayColor lightcoral;
 }
-
-
 
 // A Note is information attached
 // to a version or proposal
@@ -321,7 +319,6 @@ class Note {
   
   displayColor goldenrod;
 }
-
 
 // A Proposal is a set of ItemVersions
 // that can be linked by 'and', 'or' or
