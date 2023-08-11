@@ -47,7 +47,7 @@ class LegalEntity {
 // unions or individuals
 class Party {
   isA LegalEntity;
-  1--* UserRole;
+  0..1 -- * UserRole;
 
   displayColor yellow;
 }
@@ -56,11 +56,16 @@ class Party {
 // tracking these is so that we know
 // who is making proposals, or signing
 // of on parts of the agreement
+// Some UserRoles such as Mediator
+// may be not be associated with a specific
+// Party
 class UserRole {
   
   enum Role {
     ChiefNegotiator,
     MemberAtTable,
+    Mediator,
+    Arbitrator,
     Other
   }
   Role role;
