@@ -298,19 +298,18 @@ class Note {
   // it can be tagged as Rationale,
   // and if the other party has reacted
   // in some way, it can be tagged
-  // as Feedback-FromOtherParty to
+  // as Feedback_FromOtherParty to
   // allow for better searches
   enum NoteType {
     Unknown,
-    Rationale-Private,
-    Rationale-ToReveal,
-    Rationale-Revealed,
-    Rationale-FromOtherparty,
-    Feedback-FromOtherParty,
-    Analysis-AboutOtherParty-Private,
-    Feedback-ToReveal,
-    Feedback-Revealed,
-    Feedback-FromOtherParty,
+    Rationale_Private,
+    Rationale_ToReveal,
+    Rationale_Revealed,
+    Rationale_FromOtherparty,
+    Analysis_AboutOtherParty_Private,
+    Feedback_ToReveal,
+    Feedback_Revealed,
+    Feedback_FromOtherParty,
     ProcessObservations,
     Data,
     Other
