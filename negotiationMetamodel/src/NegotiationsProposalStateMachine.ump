@@ -1,0 +1,64 @@
+// Definition of the state machine for the
+// Proposal class
+class Proposal {
+  sm {
+    // Created by an author
+    active {
+      // Constructed, including
+      // sets of ItemVersions
+      // possibly linked by logic operators
+      initiated {
+        internallyPresent-> underInternalConsideration;
+        withdraw -> obsolete;
+        edit -> initiated;
+      }
+      
+      // Being considered by the team in a party
+      underInternalConsideration {
+        present-> underNegotiation;
+        returnToAuthorForRefinement -> initiated;
+        withdraw -> obsolete;
+        considerCounterProposal -> superceded;
+        edit -> underInternalConsideration;
+      }
+    
+      // The proposal is live 'on the table'
+      // But no new version of clauses have
+      // yet become the new baseline
+      underNegotiation {
+        agreedAsDraft -> incorporated;
+        takeToCaucus -> underOtherPartyConsideration;
+        considerCounterProposal -> superceded;
+        reject -> underInternalConsideration;
+      }
+      
+      // The proposers are waiting to hear back
+      // from the other party
+      underOtherPartyConsideration {
+         presentCounterProposal -> underInternalConsideration;
+         reject -> underInternalConsideration;
+      }
+    }
+
+    // The proposal is now historic
+    // As edits based on it to current
+    // ItemVersion has reached state
+    // agreedAsDraft
+    // The changes made may or may not
+    // end up in a final document
+    incorporated {
+    }
+    
+    // The proposal is no longer going to
+    // be returned to the table
+    obsolete {
+    }
+    
+    // The originating team received a
+    // counterproposal and consider that
+    // the to be the lead proposal in this
+    // topic. 
+    superceded {
+    }
+  }
+}

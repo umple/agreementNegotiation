@@ -67,14 +67,7 @@ mixset filterX7 {
 
 use Negotiations.ump;
 use NegotiationsItemVersionStateMachine.ump;
-
-
-filter SM1 {
-  include ItemVersion;
-}
-mixset filterSM1 {
- filter {includeFilter SM1;}  
-}
+use NegotiationsProposalStateMachine.ump;
 
 
 // use https://raw.githubusercontent.com/umple/agreementNegotiation/main/negotiationMetamodel/src/Negotiations.ump;
