@@ -20,6 +20,7 @@ cp -pr /Users/tcl/umple/UmpleParser/src-gen-umple/cruise .
 b) Compile the umple in the src directory, directing output to src-gen-umple (later on we should adjust the umple compiler so that it can use a classpath and compile the java directly, currently done in step c)
 
 ```
+cd ../src
 umple -g Java --path ../src-gen-umple Agreement.ump
 ```
 

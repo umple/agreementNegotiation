@@ -18,7 +18,7 @@ class Proposal {
         present-> underNegotiation;
         returnToAuthorForRefinement -> initiated;
         withdraw -> obsolete;
-        considerCounterProposal -> superceded;
+        considerCounterProposal -> superseded;
         edit -> underInternalConsideration;
       }
     
@@ -28,7 +28,7 @@ class Proposal {
       underNegotiation {
         agreedAsDraft -> incorporated;
         takeToCaucus -> underOtherPartyConsideration;
-        considerCounterProposal -> superceded;
+        considerCounterProposal -> superseded;
         reject -> underInternalConsideration;
       }
       
@@ -58,7 +58,7 @@ class Proposal {
     // counterproposal and consider that
     // the to be the lead proposal in this
     // topic. 
-    superceded {
+    superseded {
     }
   }
 }
