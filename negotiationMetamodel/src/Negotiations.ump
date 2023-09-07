@@ -38,7 +38,7 @@ class Agreement {
 // in negotiation for one of the 
 // parties
 class LegalEntity {
-  abstract;
+  abstract; // has no subclasses
   name;
   address;
   emailAddress;
@@ -47,7 +47,7 @@ class LegalEntity {
 }
 
 // All negotiations involve at least
-// Two parties. These could be
+// two parties. These could be
 // sovereign states, corporations,
 // unions or individuals
 class Party {
@@ -122,19 +122,22 @@ class VisibilityControlledItem {
   displayColor darkgoldenrod;
 }
 
-// An Item Version contains
+// An ItemVersion contains
 // a set of ClauseVersions
 // (containedClauses)
 //
-// Its two subclasses represent
+// Its two subclasses are
 // either an edited version of the
-// agreement as a whole, or else
-// of one of the clauses.
+// agreement (AgreementVersion) as
+// a whole, or else an edit version
+// of a Clause (ClauseVersion).
 //
-// It may be informal, private to
-// one party,
-// presented at the negotiation table,
-// or in some state of approval
+// By virtue of the fact that an
+// ItemVersion is also a 
+// VisibilityControlledItem, it
+// may be informal, private to
+// one party, or visible at the
+// negotiation table to all parties
 //
 // Any change to any contained
 // clause results
@@ -158,9 +161,7 @@ class ItemVersion {
   changeDescription;
   
   0..1 container -> * ClauseVersion containedClauses;
-  
-  //* -- * Proposal acceptedProposals; // The proposals accepted prior to creation of this
-  
+    
   displayColor lightsalmon;
 }
 
@@ -194,7 +195,7 @@ class ClauseVersion {
   // it can be changed such as when
   // re-ordering, insertion of new
   // clauses or reparenting take place
-  // A the top level, the version might
+  // At the top level, the version might
   // include a string such as 'Article'
   //
   // The title would appear after the id
@@ -202,7 +203,7 @@ class ClauseVersion {
   
   // The text is the essential legal
   // text of the clause
-  // It ises Markdown format
+  // It uses Markdown format
   // To allow for italics etc.
   text; // Markdown format
   
@@ -222,8 +223,8 @@ class ClauseVersion {
   displayColor lightsalmon;
 }
 
-// This is a special case of
-// ItemVersion for the top level
+// AgreementVersion is a special case
+// of ItemVersion for the top level
 // agreements
 class AgreementVersion {
   isA ItemVersion;
@@ -251,28 +252,29 @@ class AgreementVersion {
 // versions
 class Clause {
   // The internalClauseID is used
-  // to tie togetner all the versions
+  // to tie together all the versions
   // of a clause so their history
   // can be tracked even if the clause
   // is radically changed over time
   // This can be used by an API to refer
   // to a clause irrespective of version
   autounique internalClauseID;
+
   1 -- * ClauseVersion;
   
   displayColor lightcoral;
 }
 
 // A Note is information attached
-// to a version or proposal
+// to a Version or Proposal
 // Since it is visibility controlled
 // it can be private to just one
 // user, or to a party, or to
 // everybody. 
 //
-// A note is not a legal part of the
+// A Note is not a legal part of the
 // agreement, but may help people
-// to record what others thing,
+// to record what others think,
 // or why the change is proposed.
 // Sometimes old notes can be used
 // to help resolve disputes
@@ -280,7 +282,7 @@ class Clause {
 class Note {
   isA VisibilityControlledItem;
   
-  // A note is about something
+  // A note is about some subject;
   // a note can even be about another
   // note, such as a private
   // observation about some rationale
@@ -372,6 +374,8 @@ class Proposal {
   displayColor cornflowerblue;
 }
 
+// Version is the abstract superclass
+// of Proposal and ItemVersion
 class Version { 
   isA VisibilityControlledItem;
   abstract;
