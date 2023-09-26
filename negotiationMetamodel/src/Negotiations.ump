@@ -62,7 +62,7 @@ class Party {
 // who is making proposals, or signing
 // of on parts of the agreement
 // Some UserRoles such as Mediator
-// may be not be associated with a specific
+// may not be associated with a specific
 // Party
 class UserRole {
   
