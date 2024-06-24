@@ -458,7 +458,7 @@ class LegalEntity
 class Party
 {
   position 30 185 109 40.883152;
-  position.association Party__UserRole 28,41 30,0;
+  position.association Party__UserRole 36,41 30,0;
 }
 
 class User
