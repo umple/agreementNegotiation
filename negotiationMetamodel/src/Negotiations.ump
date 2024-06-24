@@ -4,6 +4,9 @@
 // or negotiation domain-specific
 // languages
 
+// Source is in:
+// https://github.com/umple/agreementNegotiation/
+
 // All negotiations have as their
 // objective the creation or update of
 // an Agreement. This could be
@@ -388,4 +391,82 @@ class Version {
   * -- 0..1 Version basedOn;
 
   displayColor lightsalmon;
+}
+//$?[End_of_model]$?
+
+namespace -;
+
+
+class Note
+{
+  position.association Note__VisibilityControlledItem:subject 4,0 182,10;
+  position 621 181 172.595108 74.171196;
+}
+
+class ItemVersion
+{
+  position.association ClauseVersion:containedClauses__ItemVersion:container 198,69 95,0;
+  position 266 328 197.703812 89.823372;
+}
+
+class Agreement
+{
+  position 53 566 223.709244 57.527176;
+  position.association Agreement__AgreementVersion 109,0 7,58;
+}
+
+class Clause
+{
+  position 612 487 194.415771 57.527176;
+  position.association Clause__ClauseVersion 0,12 116,40;
+}
+
+class ClauseVersion
+{
+  position 445 475 116.08696 74.171196;
+}
+
+class AgreementVersion
+{
+  position 162 470 158.301636 57.527176;
+  position.association AgreementVersion__Party 0,0 109,10;
+}
+
+class Version
+{
+  position 405 182 148.070648 89.823372;
+}
+
+class Proposal
+{
+  position 505 321 194.6875 57.527176;
+  position.association Proposal__Version:elements 134,0 148,40;
+}
+
+class VisibilityControlledItem
+{
+  position 331 32 181.888596 73.179352;
+  position.association LegalEntity:allowedToSee__VisibilityControlledItem:controlledItem 0,10 164,1;
+  position.association User:author__VisibilityControlledItem:authoredItem 0,72 115,0;
+}
+
+class LegalEntity
+{
+  position 27 18 163.91304 106.467392;
+}
+
+class Party
+{
+  position 30 185 109 40.883152;
+}
+
+class User
+{
+  position 193 183 115.394028 57.527176;
+  position.association User__UserRole 0,33 82,0;
+}
+
+class UserRole
+{
+  position 31 298 109 57.527176;
 }
