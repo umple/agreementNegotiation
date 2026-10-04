@@ -4,6 +4,7 @@
 	<!-- An umple.jar that bundles UmpleParser.ump; by default that of an umple clone built next to this one -->
 	<property name="umple.jar" location="../umple/dist/umple.jar"/>
 	<property name="parser.dir" location="agreementParser"/>
+	<property name="test.output" location="${parser.dir}/bin/test"/>
 
 	<target name="compile">
 		<java jar="${umple.jar}" fork="true" failonerror="true">
@@ -21,5 +22,47 @@
 			<arg value="../testagreements"/>
 			<arg value="../../tempOutput"/>
 		</java>
+	</target>
+
+	<!-- Runs the program on one directory of agreements and checks its exit status and its whole output,
+	     which is in agreementParser/test/<case>.expected -->
+	<macrodef name="expect-output">
+		<attribute name="case"/>
+		<attribute name="agreements"/>
+		<attribute name="succeeds"/>
+		<attribute name="dir" default="${parser.dir}/src"/>
+		<sequential>
+			<java classname="AgreementProcessorMain" classpath="${parser.dir}/bin" dir="@{dir}" fork="true"
+			      output="${test.output}/@{case}.out" resultproperty="@{case}.status">
+				<arg value="@{agreements}"/>
+				<arg value="${test.output}"/>
+			</java>
+			<fail message="@{case}: exit status ${@{case}.status} does not match succeeds=@{succeeds}">
+				<condition><xor><equals arg1="${@{case}.status}" arg2="0"/><istrue value="@{succeeds}"/></xor></condition>
+			</fail>
+			<fail message="@{case}: ${test.output}/@{case}.out differs from ${parser.dir}/test/@{case}.expected">
+				<condition><not><filesmatch file1="${test.output}/@{case}.out" file2="${parser.dir}/test/@{case}.expected" textfile="true"/></not></condition>
+			</fail>
+		</sequential>
+	</macrodef>
+
+	<target name="test" depends="compile">
+		<mkdir dir="${test.output}"/>
+		<expect-output case="testagreements" agreements="../testagreements" succeeds="true"/>
+		<expect-output case="wellformed" agreements="../test/wellformed" succeeds="true"/>
+		<expect-output case="malformed" agreements="../test/malformed" succeeds="false"/>
+
+		<!-- Agreements the program cannot read: a link to nothing, a file without read permission, a directory -->
+		<mkdir dir="${test.output}/unreadable/folder.txt"/>
+		<symlink link="${test.output}/unreadable/missing.txt" resource="${test.output}/unreadable/absent" overwrite="true"/>
+		<chmod file="${test.output}/unreadable/locked.txt" perm="600"/>
+		<touch file="${test.output}/unreadable/locked.txt"/>
+		<chmod file="${test.output}/unreadable/locked.txt" perm="000"/>
+		<expect-output case="unreadable" agreements="${test.output}/unreadable" succeeds="false"/>
+
+		<expect-output case="missing-directory" agreements="no-such-directory" succeeds="false"/>
+
+		<mkdir dir="${test.output}/no-grammar"/>
+		<expect-output case="missing-grammar" agreements="${parser.dir}/testagreements" succeeds="false" dir="${test.output}/no-grammar"/>
 	</target>
 </project>

@@ -1,0 +1,5 @@
+Parsed bare-numbers-and-prose.txt
+  [clause][identifier][thirdLevelIdentifier][numberedClauseID][number:1][heading][headingText:First heading][bodyText][bodyLine:Section XXX is prose, as is][bodyText][bodyLine:Article wording]
+  [clause][identifier][thirdLevelIdentifier][numberedClauseID][number:2][heading][headingText:Second heading]
+  [clause][identifier][thirdLevelIdentifier][numberedClauseID][number:1.1.3][heading][headingText:Indented heading]
+Success processing agreements!

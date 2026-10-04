@@ -3,10 +3,13 @@ agreement : [[clause]]*
 // A clause starts with its identifier and heading on one line; its body is the lines up to the next clause
 clause : [[identifier]] [[heading]] [[bodyText]]*
 identifier : [[articleIdentifier]] | [[sectionIdentifier]] | [[thirdLevelIdentifier]]
-articleIdentifier : Article [[numberedClauseID]]
-sectionIdentifier : Section [[numberedClauseID]]
+// Article and Section have their number on the same line
+articleIdentifier : [!article:Article(?=[ \t]+[0-9])] [[numberedClauseID]]
+sectionIdentifier : [!section:Section(?=[ \t]+[0-9])] [[numberedClauseID]]
 thirdLevelIdentifier : [[numberedClauseID]]
 heading : [*headingText]
-// A line of body text is one that starts with neither Article or Section and a number, nor a number and a dot
-bodyText : [!bodyLine:(?!(Article|Section)\s+[0-9]|[0-9]+\.)[^\n]+]
-numberedClauseID : [!number:[0-9]+([\\.][0-9]+)?([\\.][0-9]+)?]
+// A line of body text is one that does not start like a clause: with a number, alone or after
+// Article or Section, followed by a dot, a space or the end of the line
+bodyText : [!bodyLine:(?![ \t]*((Article|Section)[ \t]+)?[0-9]+[.\s])[^\n]+]
+// A number of one to three parts, then the heading on the same line
+numberedClauseID : [!number:[0-9]+([.][0-9]+){0,2}(?=[ \t]+\S)]

@@ -1,0 +1,21 @@
+Error: Unable to parse agreement keyword-on-its-own-line.txt
+Error 1500 on line 1 of file 'keyword-on-its-own-line.txt':
+Parsing error: 'Article' not understood
+Error: Unable to parse agreement missing-heading.txt
+Error 1500 on line 2 of file 'missing-heading.txt':
+Parsing error: '1.1' not understood
+Error: Unable to parse agreement missing-space.txt
+Error 1500 on line 2 of file 'missing-space.txt':
+Parsing error: '1.1.2Broken Heading' not understood
+Error: Unable to parse agreement number-without-heading.txt
+Error 1500 on line 1 of file 'number-without-heading.txt':
+Parsing error: '1' not understood
+Error: Unable to parse agreement text-before-first-clause.txt
+Error 1500 on line 1 of file 'text-before-first-clause.txt':
+Parsing error: 'Preamble before any clause' not understood
+Error: Unable to parse agreement too-many-number-parts.txt
+Error 1500 on line 1 of file 'too-many-number-parts.txt':
+Parsing error: '1.2.3.4 Heading' not understood
+Error: Unable to parse agreement unfinished-last-article.txt
+Error 1500 on line 3 of file 'unfinished-last-article.txt':
+Parsing error: '3' not understood

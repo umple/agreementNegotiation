@@ -33,4 +33,8 @@ The umple.jar must come from an Umple build that includes UmpleParser.ump; witho
 2. compiles that Java to agreementParser/bin, and copies there agreementParser/src/en.error, where the program can define error messages of its own,
 3. runs `java -cp ../bin AgreementProcessorMain ../testagreements ../../tempOutput` in agreementParser/src, where the parser finds Agreement.grammar.
 
-For each agreement the program prints the clauses it found, or the parser's error for the line it could not parse, and it exits with a nonzero status if any agreement did not parse. It does not write to the output directory yet.
+For each agreement the program prints the clauses it found, or why it could not read or parse it, and it exits with a nonzero status if any agreement failed or Agreement.grammar cannot be read. It does not write to the output directory yet.
+
+In an agreement each clause starts on a line of its own with its identifier (`Article 1`, `Section 1.1`, or a number such as `1.1.1`) followed on the same line by its heading; the lines up to the next clause are its body text. A line that starts like an identifier, with a number after `Article` or `Section` or on its own, followed by a dot, a space or the end of the line, must be a complete identifier with a heading.
+
+`ant -f build/build.xml -Dumple.jar=<path to umple.jar> test` runs the program on agreementParser/testagreements and on the agreements in agreementParser/test, including malformed ones and ones it cannot read, and checks its exit status and its output against the .expected files there.

@@ -1,0 +1,16 @@
+Parsed simpleAgreement1.txt
+  [clause][identifier][articleIdentifier][article:Article][numberedClauseID][number:1][heading][headingText:This is the beginning of the trivial case][bodyText][bodyLine:Article wording][bodyText][bodyLine:More article wording]
+  [clause][identifier][sectionIdentifier][section:Section][numberedClauseID][number:1.1][heading][headingText:A little bit about this][bodyText][bodyLine:Section description]
+  [clause][identifier][thirdLevelIdentifier][numberedClauseID][number:1.1.1][heading][headingText:Some initial suff][bodyText][bodyLine:Here is the initial stuff]
+Parsed simpleAgreement2.txt
+  [clause][identifier][articleIdentifier][article:Article][numberedClauseID][number:1][heading][headingText:This is the beginning]
+  [clause][identifier][sectionIdentifier][section:Section][numberedClauseID][number:1.1][heading][headingText:A little bit about this]
+  [clause][identifier][thirdLevelIdentifier][numberedClauseID][number:1.1.1][heading][headingText:Some initial suff]
+  [clause][identifier][thirdLevelIdentifier][numberedClauseID][number:1.1.2][heading][headingText:Some more][bodyText][bodyLine:More and more  and more]
+  [clause][identifier][sectionIdentifier][section:Section][numberedClauseID][number:1.2][heading][headingText:The rest]
+  [clause][identifier][thirdLevelIdentifier][numberedClauseID][number:1.2.1][heading][headingText:Basics]
+  [clause][identifier][thirdLevelIdentifier][numberedClauseID][number:1.2.2][heading][headingText:The end]
+  [clause][identifier][articleIdentifier][article:Article][numberedClauseID][number:2][heading][headingText:A very long paragraph][bodyText][bodyLine:Official text For matters involving the interpretation of any portion of this agreement, including the processing or arbitration of any grievance, the official text of any clause shall be the text in the language indicated by an asterisk (*) beside the number or the heading of the article/section.][bodyText][bodyLine:Translation The employer agrees to translate each clause of this agreement from the language in which the clause was negotiated into the other official language of Canada and, within 4 months of ratification, to forward the translated version to the Association for its approval.][bodyText][bodyLine:Copies The Employer agrees to make available, at no charge, within six (6) months of ratification, an electronic copy of this agreement in both official languages on its official designated Human Resources website and 100 printed copies to the Association.]
+  [clause][identifier][sectionIdentifier][section:Section][numberedClauseID][number:2.1][heading][headingText:Acknowledgements]
+  [clause][identifier][thirdLevelIdentifier][numberedClauseID][number:2.1.1][heading][headingText:Thanks to everybody][bodyText][bodyLine:This is the text of the thanks]
+Success processing agreements!

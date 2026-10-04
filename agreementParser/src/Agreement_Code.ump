@@ -34,52 +34,76 @@ class AgreementProcessor {
   depend cruise.umple.parser.Token;
 
   public boolean generate() {
-    File inputDirectory = new File(getInputPath());
-    if (!inputDirectory.isDirectory())
+    if (!isReadableFile(new File(AgreementParser.GRAMMAR)))
     {
-      addMessage("Unknown directory: " + getInputPath());
-      setSeriousProblem(true);
+      reportProblem("Error: Cannot read " + AgreementParser.GRAMMAR + "; run the program in the directory that holds it");
+      return false;
+    }
+    File inputDirectory = new File(getInputPath());
+    String[] pathnames = inputDirectory.list();
+    if (pathnames == null)
+    {
+      reportProblem("Error: Cannot list directory " + getInputPath());
       return false;
     }
 
     setParser(new AgreementParser());
-
-    parseAgreements(inputDirectory);
-
-    return !isSeriousProblem();
-  }
-
-  // Parses each agreement, a .txt file, in the directory, and reports its clauses or why it failed
-  private void parseAgreements(File inputDirectory)
-  {
-    String[] pathnames = inputDirectory.list();
     Arrays.sort(pathnames);
-
     for (String aPathName : pathnames)
     {
       if (aPathName.endsWith(".txt"))
       {
-        ParseResult result = getParser().parse(new File(inputDirectory, aPathName));
-        if (result.getWasSuccess())
-        {
-          addMessage("Parsed " + aPathName);
-          for (Token clause : getParser().getRootToken().getSubToken("agreement").getSubTokens())
-          {
-            addMessage("  " + clause);
-          }
-        }
-        else
-        {
-          addMessage("Error: Unable to parse agreement " + aPathName + System.lineSeparator() + result.toString().trim());
-          setSeriousProblem(true);
-        }
+        parseAgreement(new File(inputDirectory, aPathName));
       }
     }
+    return !isSeriousProblem();
+  }
+
+  // Reports the clauses of one agreement, or why it could not be parsed
+  private void parseAgreement(File agreementFile)
+  {
+    String name = agreementFile.getName();
+    if (!isReadableFile(agreementFile))
+    {
+      reportProblem("Error: Cannot read agreement " + name);
+      return;
+    }
+    ParseResult result = getParser().parse(agreementFile);
+    // The parser warns only when it cannot read a file, here the agreement or the grammar, both needed
+    if (!result.getWasSuccess() || result.getHasWarnings())
+    {
+      reportProblem("Error: Unable to parse agreement " + name + System.lineSeparator() + result.toString().trim());
+      return;
+    }
+    Token agreement = getParser().getRootToken().getSubToken("agreement");
+    if (agreement == null)
+    {
+      reportProblem("Error: " + AgreementParser.GRAMMAR + " does not start with the agreement rule");
+      return;
+    }
+    addMessage("Parsed " + name);
+    for (Token clause : agreement.getSubTokens())
+    {
+      addMessage("  " + clause);
+    }
+  }
+
+  private void reportProblem(String message)
+  {
+    addMessage(message);
+    setSeriousProblem(true);
+  }
+
+  private static boolean isReadableFile(File file)
+  {
+    return file.isFile() && file.canRead();
   }
 }
 
 class AgreementParser {
+  const String GRAMMAR = "Agreement.grammar";
+
   after constructor {
-    addGrammarFile("Agreement.grammar");
+    addGrammarFile(GRAMMAR);
   }
 }
