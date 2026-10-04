@@ -1,9 +1,12 @@
-agreement : [[clause]]* @@Filename [*filename];
-clause : [[identifier]]+ [[heading]]+ [[bodyText]]+
+// An agreement is a sequence of clauses: articles, their sections, and the numbered clauses in those
+agreement : [[clause]]*
+// A clause starts with its identifier and heading on one line; its body is the lines up to the next clause
+clause : [[identifier]] [[heading]] [[bodyText]]*
 identifier : [[articleIdentifier]] | [[sectionIdentifier]] | [[thirdLevelIdentifier]]
 articleIdentifier : Article [[numberedClauseID]]
 sectionIdentifier : Section [[numberedClauseID]]
 thirdLevelIdentifier : [[numberedClauseID]]
-heading : [**headingText]
-bodyText : [**headingLine]
+heading : [*headingText]
+// A line of body text is one that starts with neither Article or Section and a number, nor a number and a dot
+bodyText : [!bodyLine:(?!(Article|Section)\s+[0-9]|[0-9]+\.)[^\n]+]
 numberedClauseID : [!number:[0-9]+([\\.][0-9]+)?([\\.][0-9]+)?]

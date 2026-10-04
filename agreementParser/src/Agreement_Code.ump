@@ -3,11 +3,9 @@
 class AgreementProcessorMain {
   public static void main(String[] args) 
   {
-//DEBUG DELETED    console = "";
-     
     if (args.length < 2)
     {
-      System.out.println("Usage: java -jar agreementprocessor.jar <data_dir> <output_dir>" + System.lineSeparator()+"\n");
+      System.out.println("Usage: java AgreementProcessorMain <data_dir> <output_dir>" + System.lineSeparator());
       return;
     }
      
@@ -17,13 +15,13 @@ class AgreementProcessorMain {
       (dataDirectory,outputDirectory);
     boolean didGenerate = agg.generate();
     
-    if (didGenerate)
-    {
-      System.out.println("Success generating processing agreement!");
-    }
     for (String message : agg.getMessages())
     {
       System.out.println(message);
+    }
+    if (didGenerate)
+    {
+      System.out.println("Success processing agreements!");
     }
     System.exit(agg.isSeriousProblem() ? -1 : 0);
   }
@@ -31,109 +29,57 @@ class AgreementProcessorMain {
 }
 
 class AgreementProcessor {
-  depend java.nio.file.Files;
-  depend java.nio.file.Path;
+  depend java.util.Arrays;
+  depend cruise.umple.parser.ParseResult;
+  depend cruise.umple.parser.Token;
 
   public boolean generate() {
     File inputDirectory = new File(getInputPath());
-    if (!inputDirectory.exists())
+    if (!inputDirectory.isDirectory())
     {
       addMessage("Unknown directory: " + getInputPath());
       setSeriousProblem(true);
       return false;
     }
 
-// DEBUG took out argument "agreement" below
     setParser(new AgreementParser());
 
-    parseAgreement(inputDirectory);
+    parseAgreements(inputDirectory);
 
-    if (getParser().analyze().getWasSuccess())
-    {
-      System.out.println("Output agreement details \n"+getParser()+"\n"); 
-      return true;
-    }
-    else
-    {
-      addMessage("Error: Unable to analyze agrement files in " + getInputPath());
-      setSeriousProblem(true);
-      return false;
-    }
+    return !isSeriousProblem();
   }
 
-  private void parseAgreement(File inputDirectory)
+  // Parses each agreement, a .txt file, in the directory, and reports its clauses or why it failed
+  private void parseAgreements(File inputDirectory)
   {
-   String[] pathnames = inputDirectory.list();
-  
+    String[] pathnames = inputDirectory.list();
+    Arrays.sort(pathnames);
+
     for (String aPathName : pathnames)
     {
-      // DEBUG
-      System.out.println("Processing: "+aPathName+"\n");
       if (aPathName.endsWith(".txt"))
       {
-        String fileContentToParse = readFile(aPathName);
-        if (!getParser().parse(
-          "agreementx", fileContentToParse+" @@Filename "+aPathName).getWasSuccess())
+        ParseResult result = getParser().parse(new File(inputDirectory, aPathName));
+        if (result.getWasSuccess())
         {
-          String theMessage="Error: Unable to parse agreement at line "+ getParser().getParseResult().getPosition() +": " + aPathName ;
-          addMessage(theMessage);
-          // DEBUG
-          System.out.println(theMessage+"/n");
+          addMessage("Parsed " + aPathName);
+          for (Token clause : getParser().getRootToken().getSubToken("agreement").getSubTokens())
+          {
+            addMessage("  " + clause);
+          }
+        }
+        else
+        {
+          addMessage("Error: Unable to parse agreement " + aPathName + System.lineSeparator() + result.toString().trim());
           setSeriousProblem(true);
         }
       }
     }
-        
   }
-  
-  isA LineReader;
 }
-
-trait LineReader {
-  String readFile(String aPath) {
-    try {
-      Path fileName = Path.of(aPath);
-      return Files.readString(fileName);
-    }
-    catch (IOException e) {
-      return("Failed to read file "+aPath);
-    }
-  }
-
-
-}
-
 
 class AgreementParser {
-  depend java.nio.file.Paths;
-  depend java.nio.file.Path;
-  depend java.nio.file.Files;
-  depend java.io.IOException;
-  
-  internal Integer init = init();
-  
-
-  private int init()
-  {
-    // DEBUG
-    System.out.println("Reading in grammar\n");
-  
+  after constructor {
     addGrammarFile("Agreement.grammar");
-    
-    init += 1;
-    return init;
   }
-
-  public ParseResult analyze()
-  {
-    // DEBUG
-    System.out.println("About to analyse\n");
-
-    for (Token t : getRootToken().getSubTokens())
-    {
-       System.out.println("Found Token: "+t+"\n");
-    }
-    return getParseResult();
-
-  }  
 }

@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="AgreementNegotiation" default="Init">
-	<target name="Init">
-		 <mkdir dir="../lib/jars"/>
-      		 <copy file="../../umple/umple/dist/umpleparser-1.31.0.5692.1a9e80997.jar"   tofile="../lib/jars/umpleparser.jar" overwrite="true" />
-      		 <copy file="../../umple/umple/dist/umplerun-1.31.0.5692.1a9e80997.jar"   tofile="../lib/jars/umplerun.jar" overwrite="true" /> 
+<!-- Builds the agreement parser and runs it on the test agreements: ant -f build/build.xml -->
+<project name="AgreementNegotiation" default="run" basedir="..">
+	<!-- An umple.jar that bundles UmpleParser.ump; by default that of an umple clone built next to this one -->
+	<property name="umple.jar" location="../umple/dist/umple.jar"/>
+	<property name="parser.dir" location="agreementParser"/>
+
+	<target name="compile">
+		<java jar="${umple.jar}" fork="true" failonerror="true">
+			<arg value="${parser.dir}/src/Agreement.ump"/>
+		</java>
+		<mkdir dir="${parser.dir}/bin"/>
+		<javac srcdir="${parser.dir}/src-gen-umple" destdir="${parser.dir}/bin" includeantruntime="false" nowarn="true"/>
+		<!-- The parser looks for en.error on the classpath -->
+		<copy file="${parser.dir}/src/en.error" todir="${parser.dir}/bin"/>
 	</target>
-   
-   <target name="compile">
-   	<java jar="../lib/jars/umplerun.jar" fork="true" failonerror="true" >
-        <arg value="../agreementParser/src/Agreement.ump"/>
-    </java>
-   </target>
+
+	<!-- The parser reads Agreement.grammar from the directory it runs in -->
+	<target name="run" depends="compile">
+		<java classname="AgreementProcessorMain" classpath="${parser.dir}/bin" dir="${parser.dir}/src" fork="true" failonerror="true">
+			<arg value="../testagreements"/>
+			<arg value="../../tempOutput"/>
+		</java>
+	</target>
 </project>

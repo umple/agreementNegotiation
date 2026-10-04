@@ -16,45 +16,21 @@ It is designed to form the database and internal model for qualitative negotiati
 
 ## Parser
 
-This tool, currently a prototype., will be able to parse textual contracts such as treaties and collective agreement and enable negotiation of changes. The plan is to populate the metamodel
+This tool, currently a prototype, will be able to parse textual contracts such as treaties and collective agreement and enable negotiation of changes. The plan is to populate the metamodel
 
 
-Steps to make the Agreement parser (and any other independent app) work
+agreementParser/src/Agreement.ump is an Umple program that parses each .txt file in agreementParser/testagreements according to agreementParser/src/Agreement.grammar. It brings in Umple's rule-based parser with the single line `use lib:UmpleParser.ump;` (see the [UmpleParser README](https://github.com/umple/umple/tree/master/UmpleParser)).
 
-1. TO DO create a build script that will
-
-a) copy the UmpleParser generated code into a lib directory
-
-create directory lib if not there
+To build and run it, from the root of this repository:
 
 ```
-cd lib
-cp -pr /Users/tcl/umple/UmpleParser/src-gen-umple/cruise .
+ant -f build/build.xml -Dumple.jar=<path to umple.jar>
 ```
 
-(make sure this is never committed ... put it in .gitignore)
+The umple.jar must come from an Umple build that includes UmpleParser.ump; without `-Dumple.jar` the build uses ../umple/dist/umple.jar, from an Umple clone built next to this one. The build
 
-b) Compile the umple in the src directory, directing output to src-gen-umple (later on we should adjust the umple compiler so that it can use a classpath and compile the java directly, currently done in step c)
+1. compiles Agreement.ump to Java in agreementParser/src-gen-umple,
+2. compiles that Java to agreementParser/bin, and copies there agreementParser/src/en.error, where the program can define error messages of its own,
+3. runs `java -cp ../bin AgreementProcessorMain ../testagreements ../../tempOutput` in agreementParser/src, where the parser finds Agreement.grammar.
 
-```
-cd ../src
-umple -g Java --path ../src-gen-umple Agreement.ump
-```
-
-c) Compile the resulting Java with the correct classpath
-
-```
-javac -cp ../lib/ *.java */*.java
-```
-
-
-2. As in this repo, there needs to be an en.error file in the src directory that would optionally be populated with error messages that the parser analysis step would generate.
-
-3. Execute the result (the following currently has a problem due to 
-  - will try to process everything in testagreements .. needs fixing to just process specific files
-
-in the src directory
-
-```
-java -cp '../src-gen-umple:../lib' AgreementProcessorMain ../testagreements ../../tempOutput
-```
+For each agreement the program prints the clauses it found, or the parser's error for the line it could not parse, and it exits with a nonzero status if any agreement did not parse. It does not write to the output directory yet.
