@@ -1,0 +1,38 @@
+// Definition of the state machine for the
+// ItemVersion class
+class ItemVersion {
+  sm {
+    // Created by an author
+    active {
+      initiated {
+        present-> underNegotiation;
+      }
+    
+      // One or more proposals have been made
+      // and presented to the other Party(s)
+      underNegotiation {
+        agreedAsDraft -> underVerification;
+      }
+    
+      // parties agreed, except for error correction
+      underVerification {
+        agreedSubjectToPartyVote -> tentativelyAgreed;
+      }
+    
+      // Tentatively agreed subject to votes
+      tentativelyAgreed {
+        agreedAsFinal -> finalized;
+        stakeholdersVoteAgainst -> underNegotiation;
+      }
+    
+      // A formal agreement
+      finalized {
+      }
+      withdraw -> noLongerConsidered;
+    }
+    
+    // A version that is permanently off the table
+    noLongerConsidered {
+    }
+  }
+}
