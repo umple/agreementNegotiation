@@ -1,6 +1,7 @@
 #custom
 # generated Umple code that is not saved
 src-gen-umple/
+bin/
 lib/
 
 # Compiled class file

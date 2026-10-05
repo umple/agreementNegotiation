@@ -1,3 +1,8 @@
+generate Java "../src-gen-umple";
+
+// Umple's rule-based parser, which reads Agreement.grammar and parses agreements with it
+use lib:UmpleParser.ump;
+
 // The class that runs the process of parsing agreements
 class AgreementProcessor {
   depend java.io.*;
@@ -12,16 +17,11 @@ class AgreementProcessor {
   0..1 -> 0..1 AgreementParser parser;
 }
 
-external RuleBasedParser{}
 /* 
  * Specialist parser for the parsing agreements
  */
 class AgreementParser
 {
-  depend cruise.umple.parser.analysis.RuleBasedParser;
-  depend cruise.umple.parser.Token;
-  depend cruise.umple.parser.ParseResult;
-
   isA RuleBasedParser;
 }
 
